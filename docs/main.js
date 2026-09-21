@@ -1,6 +1,6 @@
 /**
- * Suki Stuck ($SUKISTUCK) — DRAFT / NO LAUNCH
- * CA TBA · no mint · copy disabled
+ * Suki Stuck ($SUKISTUCK) — DRAFT / NO LAUNCH / NO CA / NO MINT
+ * No Connect Wallet. No fake metrics. CTAs stay disabled.
  */
 (function () {
   "use strict";
@@ -11,34 +11,30 @@
   var navToggle = document.getElementById("nav-toggle");
   var siteNav = document.getElementById("site-nav");
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var CA_STUB = "NO CA — DRAFT / NO LAUNCH / NO MINT";
 
-  function flashTBA(btn) {
-    if (!btn) return;
-    var prev = btn.innerHTML;
-    btn.textContent = "TBA — no CA";
-    setTimeout(function () {
-      btn.innerHTML = prev;
-    }, 1600);
-  }
-
-  function lockCopy(btn) {
+  function lockDisabled(btn) {
     if (!btn) return;
     btn.disabled = true;
     btn.setAttribute("aria-disabled", "true");
     btn.addEventListener("click", function (e) {
       e.preventDefault();
-      flashTBA(btn);
+      var prev = btn.textContent;
+      btn.textContent = "NO CA — draft only";
+      setTimeout(function () {
+        btn.textContent = prev;
+      }, 1600);
     });
   }
 
-  lockCopy(copyBtn);
-  lockCopy(copyHero);
+  lockDisabled(copyBtn);
+  lockDisabled(copyHero);
 
   if (caValue) {
-    caValue.textContent = "TBA — DRAFT / NO LAUNCH";
+    caValue.textContent = CA_STUB;
   }
 
-  document.querySelectorAll(".hero__cta .btn").forEach(function (btn) {
+  document.querySelectorAll(".hero__cta .btn, #copy-ca").forEach(function (btn) {
     btn.disabled = true;
     btn.setAttribute("aria-disabled", "true");
   });
@@ -59,7 +55,7 @@
   }
 
   if (!reduceMotion && "IntersectionObserver" in window) {
-    var els = document.querySelectorAll(".section");
+    var els = document.querySelectorAll(".section, .hero__frame, .species-card");
     els.forEach(function (el) {
       el.style.opacity = "0";
       el.style.transform = "translateY(14px)";
@@ -76,7 +72,7 @@
           }
         });
       },
-      { threshold: 0.1, rootMargin: "0px 0px -6% 0px" }
+      { threshold: 0.08, rootMargin: "0px 0px -5% 0px" }
     );
     els.forEach(function (el) {
       io.observe(el);
@@ -84,6 +80,8 @@
   }
 
   if (typeof console !== "undefined" && console.info) {
-    console.info("[SUKISTUCK] DRAFT / NO LAUNCH — CA TBA. Hole = brand. Not VCFD.");
+    console.info(
+      "[SUKISTUCK] DRAFT — NO LAUNCH · NO CA · NO MINT. Assets ?v=1. Habitat = brand."
+    );
   }
 })();
