@@ -1,46 +1,81 @@
 /**
- * Suki Stuck ($SUKISTUCK) — DRAFT / NO LAUNCH
- * CA TBA · no mint · copy disabled
+ * Suki Stuck ($SUKISTUCK) — launch-ready
+ * CA = TBA until mint. Copy enabled → copies TBA + toast.
+ * No Connect Wallet. No fake metrics. No invented CA.
  */
 (function () {
   "use strict";
 
-  var copyBtn = document.getElementById("copy-ca");
-  var copyHero = document.getElementById("copy-ca-hero");
+  var CA_VALUE = "TBA";
+  var TOAST_MSG = "CA TBA — post mint";
   var caValue = document.getElementById("ca-value");
   var navToggle = document.getElementById("nav-toggle");
   var siteNav = document.getElementById("site-nav");
+  var toast = document.getElementById("toast");
+  var toastTimer = null;
   var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-  function flashTBA(btn) {
-    if (!btn) return;
-    var prev = btn.innerHTML;
-    btn.textContent = "TBA — no CA";
-    setTimeout(function () {
-      btn.innerHTML = prev;
-    }, 1600);
-  }
-
-  function lockCopy(btn) {
-    if (!btn) return;
-    btn.disabled = true;
-    btn.setAttribute("aria-disabled", "true");
-    btn.addEventListener("click", function (e) {
-      e.preventDefault();
-      flashTBA(btn);
-    });
-  }
-
-  lockCopy(copyBtn);
-  lockCopy(copyHero);
-
   if (caValue) {
-    caValue.textContent = "TBA — DRAFT / NO LAUNCH";
+    caValue.textContent = CA_VALUE;
   }
 
-  document.querySelectorAll(".hero__cta .btn").forEach(function (btn) {
-    btn.disabled = true;
-    btn.setAttribute("aria-disabled", "true");
+  function showToast(msg) {
+    if (!toast) return;
+    toast.hidden = false;
+    toast.textContent = msg;
+    requestAnimationFrame(function () {
+      toast.classList.add("is-visible");
+    });
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () {
+      toast.classList.remove("is-visible");
+      setTimeout(function () {
+        toast.hidden = true;
+      }, 300);
+    }, 2200);
+  }
+
+  function copyCa(e) {
+    if (e) e.preventDefault();
+    var done = function () {
+      showToast(TOAST_MSG);
+    };
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(CA_VALUE).then(done).catch(function () {
+        fallbackCopy(CA_VALUE);
+        done();
+      });
+    } else {
+      fallbackCopy(CA_VALUE);
+      done();
+    }
+  }
+
+  function fallbackCopy(text) {
+    var ta = document.createElement("textarea");
+    ta.value = text;
+    ta.setAttribute("readonly", "");
+    ta.style.position = "absolute";
+    ta.style.left = "-9999px";
+    document.body.appendChild(ta);
+    ta.select();
+    try {
+      document.execCommand("copy");
+    } catch (err) {
+      /* ignore */
+    }
+    document.body.removeChild(ta);
+  }
+
+  document.querySelectorAll("[data-copy-ca]").forEach(function (btn) {
+    btn.addEventListener("click", copyCa);
+  });
+
+  document.querySelectorAll(".socials__link--tba").forEach(function (a) {
+    a.addEventListener("click", function (e) {
+      e.preventDefault();
+      showToast("Socials TBA — coming soon");
+    });
   });
 
   if (navToggle && siteNav) {
@@ -59,7 +94,9 @@
   }
 
   if (!reduceMotion && "IntersectionObserver" in window) {
-    var els = document.querySelectorAll(".section");
+    var els = document.querySelectorAll(
+      ".section, .hero__frame, .species-card, .buy-step, .token__panel"
+    );
     els.forEach(function (el) {
       el.style.opacity = "0";
       el.style.transform = "translateY(14px)";
@@ -76,7 +113,7 @@
           }
         });
       },
-      { threshold: 0.1, rootMargin: "0px 0px -6% 0px" }
+      { threshold: 0.08, rootMargin: "0px 0px -5% 0px" }
     );
     els.forEach(function (el) {
       io.observe(el);
@@ -84,6 +121,8 @@
   }
 
   if (typeof console !== "undefined" && console.info) {
-    console.info("[SUKISTUCK] DRAFT / NO LAUNCH — CA TBA. Hole = brand. Not VCFD.");
+    console.info(
+      "[SUKISTUCK] Launch-ready · CA TBA · assets ?v=4 · no mint yet. Habitat = brand."
+    );
   }
 })();
